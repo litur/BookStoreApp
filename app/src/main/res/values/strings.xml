@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">BookStoreApp</string>
+    <string name="search">Search</string>
+    <string name="mainActivity_title">Books Catalogue</string>
+    <!-- Strings related to Settings -->
+    <string name="title_activity_settings">Settings</string>
+    <string name="insert_dummy_data">Insert Dummy Data</string>
+
+</resources>
