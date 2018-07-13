@@ -57,9 +57,7 @@ public final class BookContract {
         /**
          * Possible values for the language of the book.
          */
-        public static final int LANGUAGE_UNKNOWN = 0;
         public static final int LANGUAGE_ENGLISH = 1;
-        public static final int LANGUAGE_ITALIAN = 2;
 
     }
 }

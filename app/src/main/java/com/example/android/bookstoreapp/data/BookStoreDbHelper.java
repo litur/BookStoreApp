@@ -3,12 +3,11 @@ package com.example.android.bookstoreapp.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.example.android.bookstoreapp.data.BookContract.BookEntry;
 import com.example.android.bookstoreapp.data.SupplierContract.SupplierEntry;
 
 public class BookStoreDbHelper extends SQLiteOpenHelper {
-
-    public static final String LOG_TAG = BookStoreDbHelper.class.getSimpleName();
 
     /** Name of the database file */
     private static final String DATABASE_NAME = "bookstore.db";
