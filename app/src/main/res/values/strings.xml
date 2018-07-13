@@ -1,9 +1,15 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">BookStoreApp</string>
     <string name="search">Search</string>
     <string name="mainActivity_title">Books Catalogue</string>
+    <string name="main_act_table_books_message">The books table contains <xliff:g example="1" id="Rows">%s</xliff:g> books.\n \n</string>
+
+
     <!-- Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
     <string name="insert_dummy_data">Insert Dummy Data</string>
+
+    <!-- Strings for Toast Messages -->
+    <string name="new_book_inserted">Inserted a new Book at row <xliff:g example="1" id="myRow">%s </xliff:g> in table <xliff:g example="books" id="myTable">%s </xliff:g> </string>
 
 </resources>

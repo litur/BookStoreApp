@@ -3,9 +3,9 @@ package com.example.android.bookstoreapp;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
         // Create and/or open a database to read from it
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-        String myTableName = "";
-
         // projection is an array containing the fields we want to retrieve with our query
         String[] projection = { BookEntry.TABLE_NAME + "." + BookEntry._ID, BookEntry.COLUMN_BOOK_TITLE,
                 BookEntry.COLUMN_BOOK_AUTHOR,
@@ -72,14 +70,14 @@ public class MainActivity extends AppCompatActivity {
         try {
             // Create a header in the Text View with the results from the Query
 
-            displayView.setText("The book table contains " + cursor.getCount() + " books.\n\n");
+            displayView.setText(getString(R.string.main_act_table_books_message, String.valueOf(cursor.getCount())));
             displayView.append(BookEntry._ID + " - " +
                     BookEntry.COLUMN_BOOK_TITLE +
                     " - " + BookEntry.COLUMN_BOOK_AUTHOR +
                     " - " + BookEntry.COLUMN_BOOK_LANGUAGE +
                     " - " + BookEntry.COLUMN_BOOK_QUANTITY +
                     " - " + BookEntry.COLUMN_BOOK_PRICE +
-                    " - " + SupplierEntry.COLUMN_SUPPLIER_NAME +"\n");
+                    " - " + SupplierEntry.TABLE_NAME + " " + SupplierEntry.COLUMN_SUPPLIER_NAME + "\n");
 
             // Figure out the index of each column
             int idColumnIndex = cursor.getColumnIndex(BookEntry._ID);
@@ -125,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // Inserts fake (dummy) data in the Books table
+    // Inserts fake (dummy) data in the Book and supplier tables
     private void insertDummyData(){
 
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
@@ -135,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         // Create and/or open a database to write in  it
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        // Inserts a record in supplier table
+        // Inserts a record in suppliers table
         ContentValues mySuppliersDummyData = new ContentValues();
         mySuppliersDummyData.put(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME, "Penguin Books");
         mySuppliersDummyData.put(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_PHONE, "555-2537");
@@ -157,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         // Insert the new row, returning the primary key value of the new row
         long newBookRowId = db.insert(BookEntry.TABLE_NAME, null, myBooksDummyData);
         Log.e(LOGTAG, "Inserted Book row " + String.valueOf(newBookRowId));
-        showToast("Inserted Book row " + String.valueOf(newBookRowId),this);
+        showToast(getString(R.string.new_book_inserted, String.valueOf(newBookRowId), BookEntry.TABLE_NAME), this);
     }
 
     // Inflates buttons in the action bar
@@ -167,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    // Sets action on the Settings button in the Action Bar
+    // Sets action on the buttons in the Action Bar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
