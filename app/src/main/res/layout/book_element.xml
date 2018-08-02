@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/eventFrameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/myCardViewStyle">
+
+        <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary_light">
+
+            <!-- Author -->
+            <TextView
+                android:id="@+id/authorTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/small_dimen"
+                android:paddingRight="@dimen/small_dimen"
+                android:paddingTop="0dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Subtitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Philip Roth" />
+
+            <!-- Book / Product -->
+            <TextView
+                android:id="@+id/productNameTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/xsmall_dimen"
+                android:paddingLeft="@dimen/xsmall_dimen"
+                android:paddingRight="@dimen/xsmall_dimen"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/authorTV"
+                tools:text="American Pastoral" />
+
+            <!-- Price -->
+            <TextView
+                android:id="@+id/priceTV"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginLeft="@dimen/small_dimen"
+                android:layout_marginStart="@dimen/small_dimen"
+                android:layout_marginTop="@dimen/xsmall_dimen"
+                android:textColor="@color/primary_dark"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/productNameTV"
+                tools:text="2,00 euros" />
+
+            <!--  Quantity -->
+            <TextView
+                android:id="@+id/quantityTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/small_dimen"
+                android:layout_marginLeft="@dimen/small_dimen"
+                android:layout_marginStart="@dimen/small_dimen"
+                android:background="@color/primary_dark"
+                android:padding="2dp"
+                android:textColor="@color/primary_light"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/priceTV"
+                tools:text="In stock: 2 remaining" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

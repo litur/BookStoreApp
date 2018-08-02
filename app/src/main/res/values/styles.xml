@@ -25,4 +25,13 @@
     <style name="MyActionBarTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@color/primary_light</item>
     </style>
+
+    <style name="myCardViewStyle" parent="CardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/small_dimen</item>
+        <item name="android:layout_marginLeft">@dimen/medium_dimen</item>
+        <item name="android:layout_marginRight">@dimen/medium_dimen</item>
+        <item name="android:layout_marginTop">@dimen/small_dimen</item>
+    </style>
 </resources>

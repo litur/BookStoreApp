@@ -1,6 +1,8 @@
 package com.example.android.bookstoreapp;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,7 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import com.example.android.bookstoreapp.data.BookContract.BookEntry;
 import com.example.android.bookstoreapp.data.BookStoreDbHelper;
@@ -19,7 +21,12 @@ import com.example.android.bookstoreapp.data.SupplierContract.SupplierEntry;
 
 import static com.example.android.bookstoreapp.Utility.showToast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    Cursor mCursor;
+    ListView mListView;
+    // Setup an Adapter to create a list item for each row of pet data in the Cursor.
+    BookCursorAdapter adapter;
 
     private String LOGTAG = "Main Activity";
     @Override
@@ -36,15 +43,21 @@ public class MainActivity extends AppCompatActivity {
         assert myActionBar != null;
         myActionBar.setTitle(com.example.android.bookstoreapp.R.string.mainActivity_title);
         myActionBar.setElevation(8);
+
+        mListView = findViewById(R.id.bookListView);
+
+        // Gets a reference to the LoaderManager, in order to interact with loaders.
+        final android.app.LoaderManager myLoaderManager = getLoaderManager();
+
+        myLoaderManager.initLoader(Constants.BOOKS_LOADER_ID, null, this).forceLoad();
+
+        adapter = new BookCursorAdapter(this, null);
+        // Attach the adapter to the ListView.
+        mListView.setAdapter(adapter);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        displayDatabaseInfo();
-    }
 
-    private void displayDatabaseInfo() {
+/*    private void displayDatabaseInfo() {
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
         // and pass the context, which is the current activity.
         BookStoreDbHelper mDbHelper = new BookStoreDbHelper(this);
@@ -121,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             cursor.close();
         }
 
-    }
+    }*/
 
     // Inserts fake (dummy) data in the Book and supplier tables
     private void insertDummyData(){
@@ -176,9 +189,38 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_insert_dummy_data) {
             insertDummyData();
-            displayDatabaseInfo();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public android.content.Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String[] projection = {BookEntry._ID,
+                BookEntry.COLUMN_BOOK_AUTHOR,
+                BookEntry.COLUMN_BOOK_TITLE,
+                BookEntry.COLUMN_BOOK_QUANTITY,
+                BookEntry.COLUMN_BOOK_PRICE};
+        //String selection = PetEntry.COLUMN_PET_GENDER + “=?”;
+        //String selectionArgs = new String[] { PetEntry.GENDER_FEMALE };
+
+        return new CursorLoader(this, BookEntry.CONTENT_URI, projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor newCursor) {
+        // Swap the new cursor in.  (The framework will take care of closing the old cursor once we return.)
+        adapter.swapCursor(newCursor);
+    }
+
+    @Override
+    public void onLoaderReset(android.content.Loader<Cursor> loader) {
+        // This is called when the last Cursor provided to onLoadFinished()
+        // above is about to be closed.  We need to make sure we are no
+        // longer using it.
+        adapter.swapCursor(null);
+    }
+
+
 }
