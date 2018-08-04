@@ -124,10 +124,6 @@ public class BookProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
 
-        // Get writable database
-        SQLiteDatabase myDB = mDbHelper.getWritableDatabase();
-
-        myDB.insert(BookContract.BookEntry.TABLE_NAME, null, contentValues);
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case BOOKS:

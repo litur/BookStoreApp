@@ -3,8 +3,10 @@ package com.example.android.bookstoreapp;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +60,7 @@ public class BookCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
         final int quantity;
-        int price;
+        float price;
         String strQuantity;
         final String productName;
         final Uri singleBookUri;
@@ -69,6 +71,7 @@ public class BookCursorAdapter extends CursorAdapter {
         TextView quantityTV;
         Button buttonAdd;
         Button buttonRemove;
+        CardView myCardView;
 
         // Figure out the index of each column
         int idColunmIndex = cursor.getColumnIndex(BookContract.BookEntry._ID);
@@ -84,15 +87,18 @@ public class BookCursorAdapter extends CursorAdapter {
         quantityTV = view.findViewById(R.id.quantityTV);
         buttonAdd = view.findViewById(R.id.button_add);
         buttonRemove = view.findViewById(R.id.button_remove);
+        myCardView = view.findViewById(R.id.productCardView);
 
         // Assign to the TV the values coming from the cursor
         productName = cursor.getString(productColumnIndex);
         productTV.setText(productName);
         authorTV.setText(cursor.getString(authorColumnIndex));
-        price = cursor.getInt(priceColumnIndex) / 100;
-        priceTV.setText(String.valueOf(price));
+        //Price
+        price = cursor.getInt(priceColumnIndex);
+        price = price / 100;
+        priceTV.setText(Float.toString(price));
 
-        // for quantity we show a differente message based on the quantity variable
+        // for quantity we show a different message based on the quantity variable
         quantity = cursor.getInt(quantityColumnIndex);
         if (quantity > 0)
             strQuantity = context.getString(R.string.in_stock, String.valueOf(quantity));
@@ -100,8 +106,19 @@ public class BookCursorAdapter extends CursorAdapter {
             strQuantity = "Sorry, Out of Stock";
         quantityTV.setText(strQuantity);
 
-        //We create the Uri for the single Book. We will use the Uri to update the Quantity
+        //We create the Uri for the single Book. We will use the Uri to update the Quantity and set the Intent
+        // to open the Editor Activity
         singleBookUri = ContentUris.withAppendedId(BookContract.BookEntry.CONTENT_URI, cursor.getInt(idColunmIndex));
+
+        myCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent editIntent = new Intent(context, ProductEditActivity.class);
+                editIntent.setData(singleBookUri);
+                context.startActivity(editIntent);
+                Log.e("Pippo", "Clicck sulla cardView");
+            }
+        });
 
         // Sets a ClickListener to increase the quantity by one unit
         buttonAdd.setOnClickListener(new View.OnClickListener() {
