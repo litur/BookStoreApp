@@ -61,7 +61,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         myLoaderManager.initLoader(Constants.BOOKS_LOADER_ID, null, this).forceLoad();
 
+        // sets the emptView for the listView
+        mListView.setEmptyView(findViewById(R.id.empty_view));
+
         adapter = new BookCursorAdapter(this, null);
+
         // Attach the adapter to the ListView.
         mListView.setAdapter(adapter);
 

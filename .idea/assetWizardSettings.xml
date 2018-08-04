@@ -28,9 +28,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_arrow_back_24dp" />
-                            <entry key="sourceFile" value="C:\Users\rutiglianol" />
+                            <entry key="outputName" value="ic_empty_bookshelf" />
+                            <entry key="sourceFile" value="C:\Users\rutiglianol\Downloads\empty-bookshelf.svg" />
                           </map>
                         </option>
                       </PersistentState>

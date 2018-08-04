@@ -16,7 +16,9 @@
 
     <!-- Strings for mainActivity -->
     <string name="in_stock">In Stock! <xliff:g example="1" id="quantity">%s </xliff:g> remaining</string>
-
+    <string name="out_of_stock">Out of Stock</string>
+    <string name="empty_view_title_text">The books Catalog is empty!</string>
+    <string name="empty_view_subtitle_text">Start adding a Book…</string>
 
     <!-- Strings for EditorActivity -->
     <string name="editor_activity_title_new_product">Insert Product</string>

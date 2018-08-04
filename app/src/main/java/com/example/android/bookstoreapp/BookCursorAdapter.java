@@ -103,7 +103,7 @@ public class BookCursorAdapter extends CursorAdapter {
         if (quantity > 0)
             strQuantity = context.getString(R.string.in_stock, String.valueOf(quantity));
         else
-            strQuantity = "Sorry, Out of Stock";
+            strQuantity = context.getString(R.string.out_of_stock);
         quantityTV.setText(strQuantity);
 
         //We create the Uri for the single Book. We will use the Uri to update the Quantity and set the Intent
