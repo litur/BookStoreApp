@@ -1,10 +1,15 @@
 package com.example.android.bookstoreapp;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -51,29 +56,95 @@ public class BookCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
+        final int quantity;
+        int price;
+        String strQuantity;
+        final String productName;
+        final Uri singleBookUri;
+
         TextView productTV;
         TextView authorTV;
         TextView priceTV;
         TextView quantityTV;
+        Button buttonAdd;
+        Button buttonRemove;
 
         // Figure out the index of each column
+        int idColunmIndex = cursor.getColumnIndex(BookContract.BookEntry._ID);
         int productColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_TITLE);
         int authorColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_AUTHOR);
         int priceColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_PRICE);
         int quantityColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_QUANTITY);
 
-        // Initialize the TV variables
+        // Initialize the TV and buttons variables
         productTV = view.findViewById(R.id.productNameTV);
         authorTV = view.findViewById(R.id.authorTV);
         priceTV = view.findViewById(R.id.priceTV);
         quantityTV = view.findViewById(R.id.quantityTV);
+        buttonAdd = view.findViewById(R.id.button_add);
+        buttonRemove = view.findViewById(R.id.button_remove);
 
-        // Assign to the TC the values coming from the cursor
-        productTV.setText(cursor.getString(productColumnIndex));
+        // Assign to the TV the values coming from the cursor
+        productName = cursor.getString(productColumnIndex);
+        productTV.setText(productName);
         authorTV.setText(cursor.getString(authorColumnIndex));
-        priceTV.setText(cursor.getString(priceColumnIndex));
-        quantityTV.setText(cursor.getString(quantityColumnIndex));
+        price = cursor.getInt(priceColumnIndex) / 100;
+        priceTV.setText(String.valueOf(price));
+
+        // for quantity we show a differente message based on the quantity variable
+        quantity = cursor.getInt(quantityColumnIndex);
+        if (quantity > 0)
+            strQuantity = context.getString(R.string.in_stock, String.valueOf(quantity));
+        else
+            strQuantity = "Sorry, Out of Stock";
+        quantityTV.setText(strQuantity);
+
+        //We create the Uri for the single Book. We will use the Uri to update the Quantity
+        singleBookUri = ContentUris.withAppendedId(BookContract.BookEntry.CONTENT_URI, cursor.getInt(idColunmIndex));
+
+        // Sets a ClickListener to increase the quantity by one unit
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.e("Bottone", "Add button Clicked for Book " + productName);
+
+                ContentValues myBooksData = new ContentValues();
+
+                myBooksData.put(BookContract.BookEntry.COLUMN_BOOK_QUANTITY, quantity + 1);
+
+                // Insert the new row, returning the primary key value of the new row
+                int nRowsUpdated = context.getContentResolver().update(singleBookUri, myBooksData, null, null);
+                if (nRowsUpdated == 1)
+                    Utility.showToast(context.getString(R.string.quantity_updated), context);
+            }
+        });
+
+        // Sets a ClickListener to decrease the quantity by one unit
+        buttonRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.e("Bottone", "Remove button Clicked for Book " + productName);
+                // Inserts a record in books table
+                ContentValues myBooksData = new ContentValues();
+
+                // if the in stock quantity of the product is already 0, we cannot decrease it further
+                if (quantity == 0) {
+                    Utility.showToast(context.getString(R.string.quantity_already_zero), context);
+                    return;
+                }
+                // if the in stock quantity of the product is higher than 0, we can decrease it further
+                myBooksData.put(BookContract.BookEntry.COLUMN_BOOK_QUANTITY, quantity - 1);
+
+                // Insert the new row, returning the primary key value of the new row
+                int nRowsUpdated = context.getContentResolver().update(singleBookUri, myBooksData, null, null);
+                if (nRowsUpdated == 1)
+                    Utility.showToast(context.getString(R.string.quantity_updated), context);
+            }
+        });
+
 
     }
 }

@@ -42,6 +42,28 @@
                 app:layout_constraintTop_toBottomOf="@id/authorTV"
                 tools:text="American Pastoral" />
 
+
+            <Button
+                android:id="@+id/button_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:text="+"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/button_remove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="4dp"
+                android:text="-"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/button_add" />
             <!-- Price -->
             <TextView
                 android:id="@+id/priceTV"
@@ -63,9 +85,11 @@
                 android:layout_marginBottom="@dimen/small_dimen"
                 android:layout_marginLeft="@dimen/small_dimen"
                 android:layout_marginStart="@dimen/small_dimen"
+                android:layout_marginTop="4dp"
                 android:background="@color/primary_dark"
-                android:padding="2dp"
+                android:padding="4dp"
                 android:textColor="@color/primary_light"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/priceTV"
                 tools:text="In stock: 2 remaining" />

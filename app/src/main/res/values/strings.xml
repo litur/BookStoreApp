@@ -11,5 +11,9 @@
 
     <!-- Strings for Toast Messages -->
     <string name="new_book_inserted">Inserted a new Book at row <xliff:g example="1" id="myRow">%s </xliff:g> in table <xliff:g example="books" id="myTable">%s </xliff:g> </string>
+    <string name="quantity_updated">Quantity Updated</string>
+    <string name="quantity_already_zero">This item is out of Stock. You can\'t decrease its quantity</string>
 
+    <!-- Strings for mainActivity -->
+    <string name="in_stock">In Stock! <xliff:g example="1" id="quantity">%s </xliff:g> remaining</string>
 </resources>

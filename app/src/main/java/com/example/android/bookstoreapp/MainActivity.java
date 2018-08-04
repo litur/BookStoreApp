@@ -4,22 +4,17 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.example.android.bookstoreapp.data.BookContract.BookEntry;
-import com.example.android.bookstoreapp.data.BookStoreDbHelper;
 import com.example.android.bookstoreapp.data.SupplierContract;
-import com.example.android.bookstoreapp.data.SupplierContract.SupplierEntry;
-
-import static com.example.android.bookstoreapp.Utility.showToast;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -139,36 +134,27 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     // Inserts fake (dummy) data in the Book and supplier tables
     private void insertDummyData(){
 
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        BookStoreDbHelper mDbHelper = new BookStoreDbHelper(this);
-
-        // Create and/or open a database to write in  it
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         // Inserts a record in suppliers table
         ContentValues mySuppliersDummyData = new ContentValues();
         mySuppliersDummyData.put(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME, "Penguin Books");
         mySuppliersDummyData.put(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_PHONE, "555-2537");
-        // Insert the new row, returning the primary key value of the new row
-        long newSupplierRowId = db.insert(SupplierEntry.TABLE_NAME, null, mySuppliersDummyData);
-        Log.e(LOGTAG, "Inserted supplier row " + String.valueOf(newSupplierRowId));
 
         // Inserts a record in books table
         ContentValues myBooksDummyData = new ContentValues();
 
-        myBooksDummyData.put(BookEntry.COLUMN_BOOK_TITLE,"America Pastoral");
+        myBooksDummyData.put(BookEntry.COLUMN_BOOK_TITLE, "American Pastoral");
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_AUTHOR,"Philip Roth");
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_LANGUAGE,BookEntry.LANGUAGE_ENGLISH);
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_QUANTITY,1);
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_PRICE, 990);
         // for the supplier ID we pass the ID  of the newly created row in supplier table
-        myBooksDummyData.put(BookEntry.COLUMN_BOOK_SUPPLIER_ID,newSupplierRowId);
+        //TODO handle the foreign key for the supplier
+        myBooksDummyData.put(BookEntry.COLUMN_BOOK_SUPPLIER_ID, 1);
 
         // Insert the new row, returning the primary key value of the new row
-        long newBookRowId = db.insert(BookEntry.TABLE_NAME, null, myBooksDummyData);
-        Log.e(LOGTAG, "Inserted Book row " + String.valueOf(newBookRowId));
-        showToast(getString(R.string.new_book_inserted, String.valueOf(newBookRowId), BookEntry.TABLE_NAME), this);
+        Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI, myBooksDummyData);
+        if (newUri != null)
+            Utility.showToast("Inserted a new row", this);
     }
 
     // Inflates buttons in the action bar

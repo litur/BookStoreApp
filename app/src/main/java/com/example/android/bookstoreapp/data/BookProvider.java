@@ -9,8 +9,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 public class BookProvider extends ContentProvider {
+
+    /**
+     * Tag for the log messages
+     */
+    public static final String LOG_TAG = BookProvider.class.getSimpleName();
 
     /**
      * URI matcher code for the content URI for the books table
@@ -96,7 +102,7 @@ public class BookProvider extends ContentProvider {
 
         }
 
-        //cursor.setNotificationUri(getContext().getContentResolver(),uri);
+        cursor.setNotificationUri(getContext().getContentResolver(),uri);
         return cursor;
     }
 
@@ -117,16 +123,93 @@ public class BookProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        return null;
+
+        // Get writable database
+        SQLiteDatabase myDB = mDbHelper.getWritableDatabase();
+
+        myDB.insert(BookContract.BookEntry.TABLE_NAME, null, contentValues);
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case BOOKS:
+                return insertBook(uri, contentValues);
+            default:
+                throw new IllegalArgumentException("Insertion is not supported for " + uri);
+        }
     }
 
+    /**
+     * Insert a book into the database with the given content values. Return the new content URI
+     * for that specific row in the database.
+     */
+    private Uri insertBook(Uri uri, ContentValues values) {
+        long id;
+        // Get writable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        id = database.insert(BookContract.BookEntry.TABLE_NAME, null, values);
+        if (id == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        } else
+            Log.e(LOG_TAG, "Inserted row " + uri);
+        // notifies all listeners that the data has changed for the pet Content Uri
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        // Once we know the ID of the new row in the table,
+        // Return the new URI with the ID (of the newly inserted row) appended at the end
+        return ContentUris.withAppendedId(uri, id);
+    }
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
         return 0;
     }
 
+    /**
+     * Updates the data at the given selection and selection arguments, with the new ContentValues.
+     */
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case BOOKS:
+                return updateBook(uri, contentValues, selection, selectionArgs);
+            case BOOK_ID:
+                // For the PET_ID code, extract out the ID from the URI,
+                // so we know which row to update. Selection will be "_id=?" and selection
+                // arguments will be a String array containing the actual ID.
+                selection = BookContract.BookEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return updateBook(uri, contentValues, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Update is not supported for " + uri);
+        }
+    }
+
+    /**
+     * Update books into the database with the given content values. Return the new content URI
+     * for that specific row in the database.
+     */
+    private int updateBook(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        int n_rows;
+        // Get writable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // If there are no values to update, then don't try to update the database
+        if (values.size() == 0) {
+            return 0;
+        }
+
+        n_rows = database.update(BookContract.BookEntry.TABLE_NAME, values, selection, selectionArgs);
+
+        Log.e(LOG_TAG, "Inserted rows " + n_rows);
+
+        // If 1 or more rows were updated, then notify all listeners that the data at the
+        // given URI has changed
+        if (n_rows != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        // Returns the number of the database rows affected by the update statement
+        return n_rows;
     }
 }
