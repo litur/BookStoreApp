@@ -17,6 +17,9 @@ import android.widget.TextView;
 
 import com.example.android.bookstoreapp.data.BookContract;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /**
  * {@link BookCursorAdapter} is an adapter for a list or grid view
  * that uses a {@link Cursor} of pet data as its data source. This adapter knows
@@ -94,14 +97,20 @@ public class BookCursorAdapter extends CursorAdapter {
         //Price
         price = cursor.getInt(priceColumnIndex);
         price = price / 100;
-        priceTV.setText(Float.toString(price));
+        //priceTV.setText(Float.toString(price));
+        priceTV.setText(NumberFormat.getCurrencyInstance(Locale.ITALY).format(price));
 
         // for quantity we show a different message based on the quantity variable
         quantity = cursor.getInt(quantityColumnIndex);
-        if (quantity > 0)
+        if (quantity > 0) {
             strQuantity = context.getString(R.string.in_stock, String.valueOf(quantity));
-        else
+            quantityTV.setBackgroundColor(context.getResources().getColor(R.color.green));
+        } else {
             strQuantity = context.getString(R.string.out_of_stock);
+            quantityTV.setBackgroundColor(context.getResources().getColor(R.color.primary_dark));
+        }
+
+
         quantityTV.setText(strQuantity);
 
         //We create the Uri for the single Book. We will use the Uri to update the Quantity and set the Intent

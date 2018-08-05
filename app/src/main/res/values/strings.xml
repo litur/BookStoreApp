@@ -28,6 +28,8 @@
     <string name="editor_activity_editItemNotUpdated">Something went wrong. The item has not been updated.</string>
     <string name="editor_activity_newItemInserted">The new item has been inserted</string>
     <string name="editor_activity_newItemNotInserted">Something went wrong. The new item has not been inserted.</string>
-
+    <string name="delete_confirmation_dialog_message">Are you sure you want to delete this book? The action cannot be undone</string>
+    <string name="delete_confirmation_dialog_positive_Button">Sure</string>
+    <string name="delete_confirmation_dialog_negative_Button">Not Sure</string>
 
 </resources>

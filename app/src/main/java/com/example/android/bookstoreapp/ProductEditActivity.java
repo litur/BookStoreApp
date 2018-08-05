@@ -98,8 +98,8 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             @Override
             public void onClick(View view) {
                 Log.e(LOGTAG, "Click on Save Button");
-                Save();
-                finish();
+                if (Save())
+                    finish();
             }
         });
 
@@ -207,19 +207,38 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
 
     /**
      * Saves the data in the form for both new and update cases
+     * Returns true if the saving action is performed properly, otherwise false
      */
-    private void Save() {
+    private boolean Save() {
         ContentValues myBookData = new ContentValues();
         Uri insertUri;
 
-        // Retrieves the data from the views in the form
+        // Retrieves the data from the views in the form and validate it
         String title = String.valueOf(titleET.getText());
+        if (title.isEmpty()) {
+            Utility.showToast("Please insert a title for the book", this);
+            return false;
+        }
         String author = String.valueOf(authorET.getText());
+        if (author.isEmpty()) {
+            Utility.showToast("Please insert an author for the book", this);
+            return false;
+        }
+        if (quantiyET.getText().toString().isEmpty()) {
+            Utility.showToast("Please insert a quantity for the book", this);
+            return false;
+        }
         int quantity = Integer.parseInt(quantiyET.getText().toString());
+
+        if (priceET.getText().toString().isEmpty()) {
+            Utility.showToast("Please insert a price for the book", this);
+            return false;
+        }
+
         float floatPrice = Float.parseFloat(priceET.getText().toString()) * 100;
         int intPrice = Math.round(floatPrice);
 
-        //TODO Handle validation here
+        //End of validation
 
         myBookData.put(BookContract.BookEntry.COLUMN_BOOK_TITLE, title);
         myBookData.put(BookContract.BookEntry.COLUMN_BOOK_AUTHOR, author);
@@ -228,17 +247,24 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
 
         if (mCurrentBookUri == null) {
             insertUri = getContentResolver().insert(BookContract.BookEntry.CONTENT_URI, myBookData);
-            if (insertUri != null)
+            if (insertUri != null) {
                 Utility.showToast(getString(R.string.editor_activity_newItemInserted), this);
-            else
+                return true;
+            } else {
                 Utility.showToast(getString(R.string.editor_activity_newItemNotInserted), this);
+                return false;
+            }
+
         } else {
             // Insert the new row, returning the primary key value of the new row
             int nRowsUpdated = getContentResolver().update(mCurrentBookUri, myBookData, null, null);
-            if (nRowsUpdated == 1)
+            if (nRowsUpdated == 1) {
                 Utility.showToast(getString(R.string.editor_activity_editItemUpdated), this);
-            else
+                return true;
+            } else {
                 Utility.showToast(getString(R.string.editor_activity_editItemNotUpdated), this);
+                return false;
+            }
         }
 
     }

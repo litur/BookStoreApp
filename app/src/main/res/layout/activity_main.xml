@@ -41,26 +41,28 @@
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:srcCompat="@drawable/ic_plus" />
 
     <!-- Empty view for the list -->
     <RelativeLayout
         android:id="@+id/empty_view"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        app:layout_constraintBottom_toBottomOf="@+id/bookListView"
-        app:layout_constraintEnd_toEndOf="@+id/bookListView"
-        app:layout_constraintStart_toStartOf="@+id/bookListView"
-        app:layout_constraintTop_toTopOf="@+id/bookListView"
-        app:layout_constraintVertical_bias="0.26999998">
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/my_toolbar"
+        app:layout_constraintVertical_bias="0.29000002">
         <!-- Icon taken from https://www.flaticon.com/free-icon/empty-bookshelf_81763  made by http://www.freepik.com and flaticon.com -->
         <ImageView
             android:id="@+id/empty_bookshelf_image"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_empty_bookshelf" />
+            app:srcCompat="@drawable/ic_empty_bookshelf" />
 
         <TextView
             android:id="@+id/empty_title_text"
