@@ -8,6 +8,8 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,12 +18,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.example.android.bookstoreapp.data.BookContract;
 
-public class ProductEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ProductEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DeleteDialogFragment.NoticeDialogListener {
 
     Cursor mCursor;
     Uri mCurrentBookUri;
@@ -29,7 +31,10 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     private EditText authorET;
     private EditText quantiyET;
     private EditText priceET;
-    private Button saveButton;
+    private ImageButton saveButton;
+    private ImageButton deleteButton;
+    private ImageButton addButton;
+    private ImageButton removeButton;
     private String LOGTAG = "EditorActivity";
 
     @Override
@@ -56,26 +61,39 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         quantiyET = findViewById(R.id.quantityET);
         priceET = findViewById(R.id.priceET);
         saveButton = findViewById(R.id.saveBtn);
+        deleteButton = findViewById(R.id.deleteBtn);
+        addButton = findViewById(R.id.addBtn);
+        removeButton = findViewById(R.id.removeBtn);
 
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
         Intent intent = getIntent();
         mCurrentBookUri = intent.getData();
 
-        // If the intent DOES NOT contain a pet content URI, then we know that we are
-        // creating a new pet.
+        // If the intent DOES NOT contain a book content URI, then we know that we are
+        // creating a new book.
         if (mCurrentBookUri == null) {
             myActionBar.setTitle(getString(R.string.editor_activity_title_new_product));
-            // Invalidate the options menu, so the "Delete" menu option can be hidden.
-            // (It doesn't make sense to delete a pet that hasn't been created yet.)
-            //invalidateOptionsMenu();
+            // Hide the "Delete", Add and remove buttons
+            deleteButton.setVisibility(View.GONE);
+            addButton.setVisibility(View.GONE);
+            removeButton.setVisibility(View.GONE);
         } else {
             myActionBar.setTitle(getString(R.string.editor_activity_title_edit_product));
             // Initialize a loader to read the product/book data from the database
             // and display the current values in the editor
             getLoaderManager().initLoader(Constants.SINGLE_BOOK_LOADER_ID, null, this);
+            // sets a clickListener on the DeleteButton
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.e(LOGTAG, "Click on Delete Button");
+                    showEditDialog();
+                }
+            });
         }
 
+        // sets a clickListener on the SaveButton
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,7 +143,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             // Extract out the value from the Cursor for the given column index
             String title = cursor.getString(titleColumnIndex);
             String author = cursor.getString(authorColumnIndex);
-            int quantity = cursor.getInt(quantityColumnIndex);
+            final int quantity = cursor.getInt(quantityColumnIndex);
             float price = cursor.getInt(priceColumnIndex);
             price = price / 100;
 
@@ -134,6 +152,43 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             authorET.setText(author);
             quantiyET.setText(Integer.toString(quantity));
             priceET.setText(Float.toString(price));
+
+            // sets a clickListener on the AddButton to increase the in Stock Quantity.
+            // we set it here in the OnLoadFinished because we need to know the actual quantity saved in the dB
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ContentValues myBooksData = new ContentValues();
+
+                    myBooksData.put(BookContract.BookEntry.COLUMN_BOOK_QUANTITY, quantity + 1);
+
+                    // Update the record with the new quantity, returning the primary key value of the new row
+                    int nRowsUpdated = getContentResolver().update(mCurrentBookUri, myBooksData, null, null);
+                    if (nRowsUpdated == 1)
+                        Utility.showToast(getString(R.string.quantity_updated), ProductEditActivity.this);
+                }
+            });
+
+            // sets a clickListener on the RemoveButton to decrease the in Stock Quantity.
+            // we set it here in the OnLoadFinished because we need to know the actual quantity saved in the dB
+            removeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ContentValues myBooksData = new ContentValues();
+
+                    // if the in stock quantity of the product is already 0, we cannot decrease it further
+                    if (quantity == 0) {
+                        Utility.showToast(getString(R.string.quantity_already_zero), ProductEditActivity.this);
+                        return;
+                    }
+                    myBooksData.put(BookContract.BookEntry.COLUMN_BOOK_QUANTITY, quantity - 1);
+
+                    // Update the record with the new quantity, returning the primary key value of the new row
+                    int nRowsUpdated = getContentResolver().update(mCurrentBookUri, myBooksData, null, null);
+                    if (nRowsUpdated == 1)
+                        Utility.showToast(getString(R.string.quantity_updated), ProductEditActivity.this);
+                }
+            });
         }
     }
 
@@ -147,6 +202,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         titleET.setText("");
         authorET.setText("");
         quantiyET.setText("");
+        priceET.setText("");
     }
 
     /**
@@ -195,6 +251,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         //Hides the search button
         MenuItem settings_item = menu.findItem(R.id.action_search);
         settings_item.setVisible(false);
+        //Hides the insert dummy data button
+        MenuItem settings_item2 = menu.findItem(R.id.action_insert_dummy_data);
+        settings_item2.setVisible(false);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -209,5 +268,28 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showEditDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        DeleteDialogFragment editNameDialogFragment = DeleteDialogFragment.newInstance("Some Title");
+        editNameDialogFragment.show(fm, "fragment_edit_name");
+    }
+
+    //Implements action when the Activity receives a negative Click from the DeleteDialogFragment
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+        // we don't delete the Book/product, hence we do nothing
+    }
+
+    //Implements action when the Activity receives a positive Click from the DeleteDialogFragment
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        int n_rows_deleted = getContentResolver().delete(mCurrentBookUri, null, null);
+        finish();
     }
 }

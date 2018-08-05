@@ -30,8 +30,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_empty_bookshelf" />
-                            <entry key="sourceFile" value="C:\Users\rutiglianol\Downloads\empty-bookshelf.svg" />
+                            <entry key="outputName" value="ic_cart" />
+                            <entry key="sourceFile" value="C:\Users\rutiglianol\Downloads\cart.svg" />
                           </map>
                         </option>
                       </PersistentState>

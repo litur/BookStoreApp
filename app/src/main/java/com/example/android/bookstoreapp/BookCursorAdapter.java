@@ -11,8 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.android.bookstoreapp.data.BookContract;
@@ -69,8 +69,7 @@ public class BookCursorAdapter extends CursorAdapter {
         TextView authorTV;
         TextView priceTV;
         TextView quantityTV;
-        Button buttonAdd;
-        Button buttonRemove;
+        ImageButton buttonRemove;
         CardView myCardView;
 
         // Figure out the index of each column
@@ -85,7 +84,6 @@ public class BookCursorAdapter extends CursorAdapter {
         authorTV = view.findViewById(R.id.authorTV);
         priceTV = view.findViewById(R.id.priceTV);
         quantityTV = view.findViewById(R.id.quantityTV);
-        buttonAdd = view.findViewById(R.id.button_add);
         buttonRemove = view.findViewById(R.id.button_remove);
         myCardView = view.findViewById(R.id.productCardView);
 
@@ -120,31 +118,13 @@ public class BookCursorAdapter extends CursorAdapter {
             }
         });
 
-        // Sets a ClickListener to increase the quantity by one unit
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Log.e("Bottone", "Add button Clicked for Book " + productName);
-
-                ContentValues myBooksData = new ContentValues();
-
-                myBooksData.put(BookContract.BookEntry.COLUMN_BOOK_QUANTITY, quantity + 1);
-
-                // Insert the new row, returning the primary key value of the new row
-                int nRowsUpdated = context.getContentResolver().update(singleBookUri, myBooksData, null, null);
-                if (nRowsUpdated == 1)
-                    Utility.showToast(context.getString(R.string.quantity_updated), context);
-            }
-        });
-
         // Sets a ClickListener to decrease the quantity by one unit
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Log.e("Bottone", "Remove button Clicked for Book " + productName);
-                // Inserts a record in books table
+                Log.e("Bottone", "Sell button Clicked for Book " + productName);
+
                 ContentValues myBooksData = new ContentValues();
 
                 // if the in stock quantity of the product is already 0, we cannot decrease it further
@@ -158,7 +138,7 @@ public class BookCursorAdapter extends CursorAdapter {
                 // Insert the new row, returning the primary key value of the new row
                 int nRowsUpdated = context.getContentResolver().update(singleBookUri, myBooksData, null, null);
                 if (nRowsUpdated == 1)
-                    Utility.showToast(context.getString(R.string.quantity_updated), context);
+                    Utility.showToast(context.getString(R.string.item_sold), context);
             }
         });
 

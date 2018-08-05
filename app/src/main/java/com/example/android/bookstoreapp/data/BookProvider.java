@@ -155,9 +155,43 @@ public class BookProvider extends ContentProvider {
         // Return the new URI with the ID (of the newly inserted row) appended at the end
         return ContentUris.withAppendedId(uri, id);
     }
+
+    /**
+     * Delete the data at the given selection and selection arguments.
+     */
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        final int match = sUriMatcher.match(uri);
+        int n_rows;
+
+        // Get writable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        switch (match) {
+            case BOOKS:
+                // Delete all rows that match the selection and selection args
+                n_rows = database.delete(BookContract.BookEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case BOOK_ID:
+                // Delete a single row given by the ID in the URI
+                // For the BOOK_ID code, extract out the ID from the URI,
+                // so we know which row to delete. Selection will be "_id=?" and selection
+                // arguments will be a String array containing the actual ID.
+                selection = BookContract.BookEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+
+                n_rows = database.delete(BookContract.BookEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
+        }
+        // If 1 or more rows were deleted, then notify all listeners that the data at the
+        // given URI has changed
+        if (n_rows != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return n_rows;
     }
 
     /**

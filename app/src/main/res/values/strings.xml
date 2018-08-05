@@ -12,13 +12,14 @@
     <!-- Strings for Toast Messages -->
     <string name="new_book_inserted">Inserted a new Book at row <xliff:g example="1" id="myRow">%s </xliff:g> in table <xliff:g example="books" id="myTable">%s </xliff:g> </string>
     <string name="quantity_updated">Quantity Updated</string>
-    <string name="quantity_already_zero">This item is out of Stock. You can\'t decrease its quantity</string>
+    <string name="item_sold">The stock has been reduced by 1</string>
+    <string name="quantity_already_zero">This item is out of Stock. You can\'t sell anymore of it</string>
 
     <!-- Strings for mainActivity -->
     <string name="in_stock">In Stock! <xliff:g example="1" id="quantity">%s </xliff:g> remaining</string>
     <string name="out_of_stock">Out of Stock</string>
     <string name="empty_view_title_text">The books Catalog is empty!</string>
-    <string name="empty_view_subtitle_text">Start adding a Book…</string>
+    <string name="empty_view_subtitle_text">Add a book tapping on the plus button....</string>
 
     <!-- Strings for EditorActivity -->
     <string name="editor_activity_title_new_product">Insert Product</string>
@@ -27,5 +28,6 @@
     <string name="editor_activity_editItemNotUpdated">Something went wrong. The item has not been updated.</string>
     <string name="editor_activity_newItemInserted">The new item has been inserted</string>
     <string name="editor_activity_newItemNotInserted">Something went wrong. The new item has not been inserted.</string>
+
 
 </resources>
