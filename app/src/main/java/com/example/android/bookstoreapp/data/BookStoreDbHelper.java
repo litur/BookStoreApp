@@ -38,7 +38,7 @@ public class BookStoreDbHelper extends SQLiteOpenHelper {
                 + BookEntry.COLUMN_BOOK_LANGUAGE + " INTEGER NOT NULL DEFAULT 0, "
                 + BookEntry.COLUMN_BOOK_QUANTITY + " INTEGER NOT NULL, "
                 + BookEntry.COLUMN_BOOK_PRICE + " INTEGER NOT NULL, "
-                + BookEntry.COLUMN_BOOK_SUPPLIER_ID + " INTEGER);";
+                + BookEntry.COLUMN_BOOK_SUPPLIER_ID + " TEXT);";
 
         // Execute the SQL statement
         myDb.execSQL(SQL_CREATE_BOOKS_TABLE);
@@ -51,6 +51,34 @@ public class BookStoreDbHelper extends SQLiteOpenHelper {
 
         // Execute the SQL statement
         myDb.execSQL(SQL_CREATE_SUPPLIERS_TABLE);
+
+        String SQL_INSERT_DUMMY_SUPPLIERS_DATA = "INSERT INTO " + SupplierEntry.TABLE_NAME + " ("
+                + SupplierEntry._ID + ", "
+                + SupplierEntry.COLUMN_SUPPLIER_NAME + ", "
+                + SupplierEntry.COLUMN_SUPPLIER_PHONE + ")" +
+                " VALUES (1, 'Amazon', '0999999');";
+
+        // Execute the SQL statement
+        myDb.execSQL(SQL_INSERT_DUMMY_SUPPLIERS_DATA);
+
+        SQL_INSERT_DUMMY_SUPPLIERS_DATA = "INSERT INTO " + SupplierEntry.TABLE_NAME + " ("
+                + SupplierEntry._ID + ", "
+                + SupplierEntry.COLUMN_SUPPLIER_NAME + ", "
+                + SupplierEntry.COLUMN_SUPPLIER_PHONE + ")" +
+                " VALUES (2, 'Penguin Books', '11111111');";
+
+        // Execute the SQL statement
+        myDb.execSQL(SQL_INSERT_DUMMY_SUPPLIERS_DATA);
+
+        SQL_INSERT_DUMMY_SUPPLIERS_DATA = "INSERT INTO " + SupplierEntry.TABLE_NAME + " ("
+                + SupplierEntry._ID + ", "
+                + SupplierEntry.COLUMN_SUPPLIER_NAME + ", "
+                + SupplierEntry.COLUMN_SUPPLIER_PHONE + ")" +
+                " VALUES (3, 'Les rich Books', '333333333');";
+
+        // Execute the SQL statement
+        myDb.execSQL(SQL_INSERT_DUMMY_SUPPLIERS_DATA);
+
 
     }
 

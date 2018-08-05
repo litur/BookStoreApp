@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.example.android.bookstoreapp.data.BookContract.BookEntry;
-import com.example.android.bookstoreapp.data.SupplierContract;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -74,11 +73,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     // Inserts fake (dummy) data in the Book and supplier tables
     private void insertDummyData(){
 
-        // Inserts a record in suppliers table
-        ContentValues mySuppliersDummyData = new ContentValues();
-        mySuppliersDummyData.put(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME, "Penguin Books");
-        mySuppliersDummyData.put(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_PHONE, "555-2537");
-
         // Inserts a record in books table
         ContentValues myBooksDummyData = new ContentValues();
 
@@ -89,14 +83,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_PRICE, 990);
         // for the supplier ID we pass the ID  of the newly created row in supplier table
         //TODO handle the foreign key for the supplier
-        myBooksDummyData.put(BookEntry.COLUMN_BOOK_SUPPLIER_ID, 1);
+        myBooksDummyData.put(BookEntry.COLUMN_BOOK_SUPPLIER_ID, "Penguin Books");
 
         // Insert the new row, returning the primary key value of the new row
         Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI, myBooksDummyData);
         if (newUri != null)
-            Utility.showToast("Inserted a new row", this);
+            Utility.showToast("Inserted a new book", this);
     }
 
+    //TODO add the deleteAllProducts in the menu
+
+    /**
+     * Perform the deletion of all the books/products in the database
+     */
+    private void deleteAllProducts() {
+        int nRowsDeleted = getContentResolver().delete(BookEntry.CONTENT_URI, null, null);
+        if (nRowsDeleted > 0) {
+            Utility.showToast(getString(R.string.delete_all_ok), this);
+        } else
+            Utility.showToast(getString(R.string.delete_all_error), this);
+    }
     // Inflates buttons in the action bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -115,6 +121,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         if (id == R.id.action_insert_dummy_data) {
             insertDummyData();
+            return true;
+        }
+
+        if (id == R.id.action_delete_all_data) {
+            deleteAllProducts();
             return true;
         }
         return super.onOptionsItemSelected(item);

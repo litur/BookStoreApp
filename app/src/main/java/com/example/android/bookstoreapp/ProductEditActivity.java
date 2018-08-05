@@ -18,14 +18,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 
 import com.example.android.bookstoreapp.data.BookContract;
+import com.example.android.bookstoreapp.data.SupplierContract;
+
+import java.util.ArrayList;
 
 public class ProductEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DeleteDialogFragment.NoticeDialogListener {
 
     Cursor mCursor;
+    Cursor supplierCursor;
     Uri mCurrentBookUri;
     private EditText titleET;
     private EditText authorET;
@@ -35,6 +43,11 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     private ImageButton deleteButton;
     private ImageButton addButton;
     private ImageButton removeButton;
+
+    private Spinner supplierSpinner;
+    private ArrayAdapter<String> mSpinAdapter;
+    private String mySupplier;
+
     private String LOGTAG = "EditorActivity";
 
     @Override
@@ -64,6 +77,8 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         deleteButton = findViewById(R.id.deleteBtn);
         addButton = findViewById(R.id.addBtn);
         removeButton = findViewById(R.id.removeBtn);
+        supplierSpinner = findViewById(R.id.supplierSpinner);
+
 
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
@@ -103,6 +118,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             }
         });
 
+
+        setupSuppliersSpinner();
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override
@@ -112,7 +130,8 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
                 BookContract.BookEntry.COLUMN_BOOK_TITLE,
                 BookContract.BookEntry.COLUMN_BOOK_AUTHOR,
                 BookContract.BookEntry.COLUMN_BOOK_QUANTITY,
-                BookContract.BookEntry.COLUMN_BOOK_PRICE
+                BookContract.BookEntry.COLUMN_BOOK_PRICE,
+                BookContract.BookEntry.COLUMN_BOOK_SUPPLIER_ID
         };
 
         // This loader will execute the ContentProvider's query method on a background thread
@@ -139,6 +158,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             int authorColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_AUTHOR);
             int quantityColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_PRICE);
+            int supplierColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_SUPPLIER_ID);
 
             // Extract out the value from the Cursor for the given column index
             String title = cursor.getString(titleColumnIndex);
@@ -152,6 +172,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             authorET.setText(author);
             quantiyET.setText(Integer.toString(quantity));
             priceET.setText(Float.toString(price));
+            supplierSpinner.setSelection(mSpinAdapter.getPosition(cursor.getString(supplierColumnIndex)));
 
             // sets a clickListener on the AddButton to increase the in Stock Quantity.
             // we set it here in the OnLoadFinished because we need to know the actual quantity saved in the dB
@@ -189,6 +210,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
                         Utility.showToast(getString(R.string.quantity_updated), ProductEditActivity.this);
                 }
             });
+
         }
     }
 
@@ -244,6 +266,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         myBookData.put(BookContract.BookEntry.COLUMN_BOOK_AUTHOR, author);
         myBookData.put(BookContract.BookEntry.COLUMN_BOOK_QUANTITY, quantity);
         myBookData.put(BookContract.BookEntry.COLUMN_BOOK_PRICE, intPrice);
+        myBookData.put(BookContract.BookEntry.COLUMN_BOOK_SUPPLIER_ID, mySupplier);
 
         if (mCurrentBookUri == null) {
             insertUri = getContentResolver().insert(BookContract.BookEntry.CONTENT_URI, myBookData);
@@ -280,6 +303,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         //Hides the insert dummy data button
         MenuItem settings_item2 = menu.findItem(R.id.action_insert_dummy_data);
         settings_item2.setVisible(false);
+        //Hides the delete all button
+        MenuItem settings_item3 = menu.findItem(R.id.action_delete_all_data);
+        settings_item3.setVisible(false);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -317,5 +343,55 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     public void onDialogPositiveClick(DialogFragment dialog) {
         int n_rows_deleted = getContentResolver().delete(mCurrentBookUri, null, null);
         finish();
+    }
+
+    /**
+     * Setup the dropdown spinner that allows the user to select the gender of the pet.
+     */
+    private void setupSuppliersSpinner() {
+
+        //Set the spinner which shows existing supplier names
+        ArrayList<String> suppliersList;
+        suppliersList = new ArrayList<>();
+
+        String[] projection = {SupplierContract.SupplierEntry._ID,
+                SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME};
+        String mySortOrder = "name ASC";
+
+        Log.e(LOGTAG, SupplierContract.SupplierEntry.CONTENT_URI.toString());
+
+        supplierCursor = getContentResolver().query(SupplierContract.SupplierEntry.CONTENT_URI, projection, null, null, mySortOrder);
+
+        int supplierIDColumnIndex = supplierCursor.getColumnIndex(SupplierContract.SupplierEntry._ID);
+        int supplierNameColumnIndex = supplierCursor.getColumnIndex(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME);
+        long n_rows = supplierCursor.getCount();
+        Log.e(LOGTAG, String.valueOf(n_rows));
+
+        while (supplierCursor.moveToNext()) {
+            //suppliersList.add(supplierCursor.getInt(supplierIDColumnIndex),supplierCursor.getString(supplierNameColumnIndex));
+            suppliersList.add(supplierCursor.getString(supplierNameColumnIndex));
+        }
+        supplierCursor.close();
+
+        // Creating adapter for spinner
+        mSpinAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, suppliersList);
+        mSpinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        supplierSpinner.setAdapter(mSpinAdapter);
+
+        // Set the integer mSelected to the constant values
+        supplierSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mySupplier = parent.getItemAtPosition(position).toString();
+                Log.e(LOGTAG, mySupplier);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
     }
 }

@@ -27,6 +27,10 @@ public class BookProvider extends ContentProvider {
      */
     private static final int BOOK_ID = 101;
     /**
+     * URI matcher code for the content URI for the suppliers table
+     */
+    private static final int SUPPLIERS = 102;
+    /**
      * // Creates a UriMatcher object to match a content URI to a corresponding code.
      * The input passed into the constructor represents the code to return for the root URI.
      * It's common to use NO_MATCH as the input for this case.
@@ -41,6 +45,7 @@ public class BookProvider extends ContentProvider {
 
         sUriMatcher.addURI(BookContract.CONTENT_AUTHORITY, BookContract.BookEntry.PATH_BOOKS, BOOKS);
         sUriMatcher.addURI(BookContract.CONTENT_AUTHORITY, BookContract.BookEntry.PATH_BOOKS + "/#", BOOK_ID);
+        sUriMatcher.addURI(BookContract.CONTENT_AUTHORITY, SupplierContract.SupplierEntry.PATH_SUPPLIERS, SUPPLIERS);
     }
 
     private BookStoreDbHelper mDbHelper;
@@ -97,6 +102,14 @@ public class BookProvider extends ContentProvider {
                 cursor = database.query(BookContract.BookEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
+            case SUPPLIERS:
+                // For the SUPPLIERS code, query the suppliers table directly with the given
+                // projection, selection, selection arguments, and sort order. The cursor
+                // could contain multiple rows of the pets table.
+
+                cursor = database.query(SupplierContract.SupplierEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
 
@@ -115,6 +128,8 @@ public class BookProvider extends ContentProvider {
                 return BookContract.BookEntry.CONTENT_LIST_TYPE;
             case BOOK_ID:
                 return BookContract.BookEntry.CONTENT_ITEM_TYPE;
+            case SUPPLIERS:
+                return SupplierContract.SupplierEntry.CONTENT_LIST_TYPE;
             default:
                 throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
         }
@@ -128,6 +143,8 @@ public class BookProvider extends ContentProvider {
         switch (match) {
             case BOOKS:
                 return insertBook(uri, contentValues);
+            case SUPPLIERS:
+                return insertSupplier(uri, contentValues);
             default:
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
@@ -149,6 +166,29 @@ public class BookProvider extends ContentProvider {
         } else
             Log.e(LOG_TAG, "Inserted row " + uri);
         // notifies all listeners that the data has changed for the pet Content Uri
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        // Once we know the ID of the new row in the table,
+        // Return the new URI with the ID (of the newly inserted row) appended at the end
+        return ContentUris.withAppendedId(uri, id);
+    }
+
+    /**
+     * Insert a supplier into the database with the given content values. Return the new content URI
+     * for that specific row in the database.
+     */
+    private Uri insertSupplier(Uri uri, ContentValues values) {
+        long id;
+        // Get writable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        id = database.insert(SupplierContract.SupplierEntry.TABLE_NAME, null, values);
+        if (id == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        } else
+            Log.e(LOG_TAG, "Inserted row " + uri);
+        // notifies all listeners that the data has changed for the supplier Content Uri
         getContext().getContentResolver().notifyChange(uri, null);
 
         // Once we know the ID of the new row in the table,
