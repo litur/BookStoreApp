@@ -7,7 +7,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".ProductEditActivity">
 
         <!-- Toolbar -->
@@ -30,7 +30,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Title"
+            android:text="@string/EditProductTitleLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/my_toolbar" />
 
@@ -57,7 +57,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Author"
+            android:text="@string/EditProductAuthorLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleET" />
 
@@ -83,7 +83,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Quantity in Stock"
+            android:text="@string/EditProductQuantityLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/authorET" />
 
@@ -106,7 +106,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Price (euro)"
+            android:text="@string/EditProductPriceLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/quantityET" />
 
@@ -127,9 +127,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner"
+            app:layout_constraintTop_toBottomOf="@+id/SupplierPhoneTV"
             app:srcCompat="@drawable/ic_content_save" />
 
         <ImageButton
@@ -138,9 +138,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintStart_toEndOf="@+id/saveBtn"
-            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner"
+            app:layout_constraintTop_toBottomOf="@+id/SupplierPhoneTV"
             app:srcCompat="@drawable/ic_delete" />
 
         <ImageButton
@@ -149,9 +149,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintStart_toEndOf="@+id/deleteBtn"
-            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner"
+            app:layout_constraintTop_toBottomOf="@+id/SupplierPhoneTV"
             app:srcCompat="@drawable/ic_plus_box" />
 
         <ImageButton
@@ -160,9 +160,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintStart_toEndOf="@+id/addBtn"
-            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner"
+            app:layout_constraintTop_toBottomOf="@+id/SupplierPhoneTV"
             app:srcCompat="@drawable/ic_minus_box" />
 
         <TextView
@@ -172,7 +172,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Supplier"
+            android:text="@string/EditProductSupplierLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/priceET" />
 
@@ -185,6 +185,18 @@
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/supplierLabelTV" />
+
+        <TextView
+            android:id="@+id/SupplierPhoneTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:autoLink="phone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner"
+            tools:text="333229911" />
 
 
     </android.support.constraint.ConstraintLayout>

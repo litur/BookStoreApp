@@ -33,6 +33,11 @@
     <string name="delete_confirmation_dialog_message">Are you sure you want to delete this book? The action cannot be undone</string>
     <string name="delete_confirmation_dialog_positive_Button">Sure</string>
     <string name="delete_confirmation_dialog_negative_Button">Not Sure</string>
+    <string name="EditProductSupplierLabel">Supplier</string>
+    <string name="EditProductPriceLabel">Price (euro)</string>
+    <string name="EditProductQuantityLabel">Quantity in Stock</string>
+    <string name="EditProductAuthorLabel">Author</string>
+    <string name="EditProductTitleLabel">Title</string>
 
 
 </resources>

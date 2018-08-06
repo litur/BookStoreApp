@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.android.bookstoreapp.data.BookContract;
 import com.example.android.bookstoreapp.data.SupplierContract;
@@ -39,6 +40,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     private EditText authorET;
     private EditText quantiyET;
     private EditText priceET;
+    private TextView supplierPhoneTV;
     private ImageButton saveButton;
     private ImageButton deleteButton;
     private ImageButton addButton;
@@ -54,7 +56,6 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_edit);
-
 
         // Sets the Toolbar as Action Bar
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
@@ -78,7 +79,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         addButton = findViewById(R.id.addBtn);
         removeButton = findViewById(R.id.removeBtn);
         supplierSpinner = findViewById(R.id.supplierSpinner);
-
+        supplierPhoneTV = findViewById(R.id.SupplierPhoneTV);
 
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
@@ -118,8 +119,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             }
         });
 
-
+        //Call initializer for supplier spinner
         setupSuppliersSpinner();
+
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
@@ -143,6 +145,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
                 null);                 // Default sort order
     }
 
+    /**
+     * Called when the loader finishes to Load Data
+     */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // Bail early if the cursor is null or there is less than 1 row in the cursor
@@ -165,6 +170,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             String author = cursor.getString(authorColumnIndex);
             final int quantity = cursor.getInt(quantityColumnIndex);
             float price = cursor.getInt(priceColumnIndex);
+            // price is stored as integer in the dB
             price = price / 100;
 
             // Update the views on the screen with the values from the database
@@ -173,6 +179,8 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             quantiyET.setText(Integer.toString(quantity));
             priceET.setText(Float.toString(price));
             supplierSpinner.setSelection(mSpinAdapter.getPosition(cursor.getString(supplierColumnIndex)));
+            supplierPhoneTV.setAutoLinkMask(4);
+            supplierPhoneTV.setText(getSupplierPhone(cursor.getString(supplierColumnIndex)));
 
             // sets a clickListener on the AddButton to increase the in Stock Quantity.
             // we set it here in the OnLoadFinished because we need to know the actual quantity saved in the dB
@@ -225,6 +233,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         authorET.setText("");
         quantiyET.setText("");
         priceET.setText("");
+        // TODO add other fields
     }
 
     /**
@@ -292,7 +301,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
 
     }
 
-    // Inflates buttons in the action bar
+    /**
+     * Inflates buttons in the action bar
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar, menu);
@@ -310,7 +321,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         return super.onCreateOptionsMenu(menu);
     }
 
-    // Implements the Up Button functionality as explained in https://developer.android.com/training/implementing-navigation/ancestral
+    /**
+     * Implements the Up Button functionality as explained in https://developer.android.com/training/implementing-navigation/ancestral
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -322,20 +335,27 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Instantiates and show a new DeleteDialogFragment to ask for the user input to confirm the deletion of the current record
+     */
     private void showEditDialog() {
         FragmentManager fm = getSupportFragmentManager();
-        DeleteDialogFragment editNameDialogFragment = DeleteDialogFragment.newInstance("Some Title");
+        DeleteDialogFragment editNameDialogFragment = DeleteDialogFragment.newInstance("Confirm Delete");
         editNameDialogFragment.show(fm, "fragment_edit_name");
     }
 
-    //Implements action when the Activity receives a negative Click from the DeleteDialogFragment
+    /**
+     * Implements action when the Activity receives a negative Click from the DeleteDialogFragment
+     */
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative button
         // we don't delete the Book/product, hence we do nothing
     }
 
-    //Implements action when the Activity receives a positive Click from the DeleteDialogFragment
+    /**
+     * Implements action when the Activity receives a positive Click from the DeleteDialogFragment
+     */
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
@@ -386,6 +406,8 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mySupplier = parent.getItemAtPosition(position).toString();
+                supplierPhoneTV.setText(getSupplierPhone(mySupplier));
+
                 Log.e(LOGTAG, mySupplier);
             }
 
@@ -393,5 +415,35 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+    }
+
+    /**
+     * gets the supplierPhone from the Supplier table for the Supplier selected in the spinner
+     * It's called by OnLoadFinish of the BooksLoader and on onItemSelected of the Supplier Spinner
+     *
+     * @param supplierForPhone a String containing the name of the supplier as saved on the dB
+     * @return a String containing the phone of the supplier
+     */
+    private String getSupplierPhone(String supplierForPhone) {
+        String[] projection = {SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME,
+                SupplierContract.SupplierEntry.COLUMN_SUPPLIER_PHONE};
+        String selection = SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME + "=?";
+        String[] selectionArgs = {supplierForPhone};
+        String myPhone;
+        Cursor phoneCursor = null;
+        try {
+            phoneCursor = getContentResolver().query(SupplierContract.SupplierEntry.CONTENT_URI, projection, selection, selectionArgs, null);
+            phoneCursor.moveToFirst();
+
+            myPhone = phoneCursor.getString(phoneCursor.getColumnIndex(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_PHONE));
+        } catch (Exception e) {
+            e.printStackTrace();
+            myPhone = "";
+        } finally {
+            if (!phoneCursor.isNull(0))
+                phoneCursor.close();
+        }
+
+        return myPhone;
     }
 }
