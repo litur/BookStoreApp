@@ -38,6 +38,7 @@
     <string name="EditProductQuantityLabel">Quantity in Stock</string>
     <string name="EditProductAuthorLabel">Author</string>
     <string name="EditProductTitleLabel">Title</string>
+    <string name="EditProductSupplierPhoneLabel">Supplier Phone</string>
     <string name="EditProductTitleEmptyWarning">Please insert a title for the book</string>
     <string name="EditProductAuthorEmptyWarning">Please insert an author for the book</string>
     <string name="EditProductQuantityEmptyWarning">Please insert a quantity for the book</string>
@@ -60,5 +61,6 @@
     <!-- Label for order-by oldest option [CHAR LIMIT=20] -->
     <string name="settings_order_by_quantity_ASC_label">Quantity in Stock</string>
     <string name="settings_order_by_quantity_ASC_value" translatable="false">quantity_ASC</string>
+
 
 </resources>

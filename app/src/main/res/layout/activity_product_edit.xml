@@ -128,6 +128,9 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
+            android:elevation="@dimen/small_dimen"
+            app:layout_constraintEnd_toStartOf="@+id/deleteBtn"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/SupplierPhoneTV"
             app:srcCompat="@drawable/ic_content_save" />
@@ -139,6 +142,9 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
+            android:elevation="@dimen/small_dimen"
+            app:layout_constraintEnd_toStartOf="@+id/addBtn"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/saveBtn"
             app:layout_constraintTop_toBottomOf="@+id/SupplierPhoneTV"
             app:srcCompat="@drawable/ic_delete" />
@@ -150,6 +156,9 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
+            android:elevation="@dimen/small_dimen"
+            app:layout_constraintEnd_toStartOf="@+id/removeBtn"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/deleteBtn"
             app:layout_constraintTop_toBottomOf="@+id/SupplierPhoneTV"
             app:srcCompat="@drawable/ic_plus_box" />
@@ -161,6 +170,9 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
+            android:elevation="@dimen/small_dimen"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/addBtn"
             app:layout_constraintTop_toBottomOf="@+id/SupplierPhoneTV"
             app:srcCompat="@drawable/ic_minus_box" />
@@ -193,9 +205,9 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:autoLink="phone"
-            app:layout_constraintBottom_toBottomOf="@+id/phoneButton"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/phoneButton"
+            app:layout_constraintTop_toBottomOf="@+id/supplierPhoneLabelTV"
             tools:text="333229911" />
 
         <ImageButton
@@ -204,10 +216,59 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/SupplierPhoneTV"
             app:layout_constraintStart_toEndOf="@+id/SupplierPhoneTV"
-            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner"
+            app:layout_constraintTop_toTopOf="@+id/SupplierPhoneTV"
             app:srcCompat="@android:drawable/stat_sys_phone_call" />
+
+        <TextView
+            android:id="@+id/supplierPhoneLabelTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/EditProductSupplierPhoneLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner" />
+
+        <TextView
+            android:id="@+id/SaveLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/saveBtn"
+            app:layout_constraintStart_toStartOf="@+id/saveBtn"
+            app:layout_constraintTop_toBottomOf="@+id/saveBtn" />
+
+        <TextView
+            android:id="@+id/deleteLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            app:layout_constraintEnd_toEndOf="@+id/deleteBtn"
+            app:layout_constraintStart_toStartOf="@+id/deleteBtn"
+            app:layout_constraintTop_toBottomOf="@+id/deleteBtn" />
+
+        <TextView
+            android:id="@+id/AddLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            app:layout_constraintEnd_toEndOf="@+id/addBtn"
+            app:layout_constraintStart_toStartOf="@+id/addBtn"
+            app:layout_constraintTop_toBottomOf="@+id/addBtn" />
+
+        <TextView
+            android:id="@+id/RemoveLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove"
+            app:layout_constraintEnd_toEndOf="@+id/removeBtn"
+            app:layout_constraintStart_toStartOf="@+id/removeBtn"
+            app:layout_constraintTop_toBottomOf="@+id/removeBtn" />
 
 
     </android.support.constraint.ConstraintLayout>

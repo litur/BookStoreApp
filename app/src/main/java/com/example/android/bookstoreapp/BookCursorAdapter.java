@@ -107,7 +107,7 @@ public class BookCursorAdapter extends CursorAdapter {
             quantityTV.setBackgroundColor(context.getResources().getColor(R.color.green));
         } else {
             strQuantity = context.getString(R.string.out_of_stock);
-            quantityTV.setBackgroundColor(context.getResources().getColor(R.color.primary_dark));
+            quantityTV.setBackgroundColor(context.getResources().getColor(R.color.product_not_available));
         }
 
 

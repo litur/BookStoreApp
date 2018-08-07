@@ -45,6 +45,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     private ImageButton addButton;
     private ImageButton removeButton;
     private ImageButton phoneButton;
+    private TextView deleteLabel;
+    private TextView addLabel;
+    private TextView removeLabel;
 
     private Spinner supplierSpinner;
     private ArrayAdapter<String> mSpinAdapter;
@@ -84,6 +87,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         phoneButton = findViewById(R.id.phoneButton);
         supplierSpinner = findViewById(R.id.supplierSpinner);
         supplierPhoneTV = findViewById(R.id.SupplierPhoneTV);
+        deleteLabel = findViewById(R.id.deleteLabel);
+        addLabel = findViewById(R.id.AddLabel);
+        removeLabel = findViewById(R.id.RemoveLabel);
 
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
@@ -98,6 +104,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             deleteButton.setVisibility(View.GONE);
             addButton.setVisibility(View.GONE);
             removeButton.setVisibility(View.GONE);
+            deleteLabel.setVisibility(View.GONE);
+            addLabel.setVisibility(View.GONE);
+            removeLabel.setVisibility(View.GONE);
         } else {
             myActionBar.setTitle(getString(R.string.editor_activity_title_edit_product));
             // Initialize a loader to read the product/book data from the database
