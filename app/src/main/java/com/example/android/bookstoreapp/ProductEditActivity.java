@@ -33,7 +33,6 @@ import java.util.ArrayList;
 
 public class ProductEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DeleteDialogFragment.NoticeDialogListener {
 
-    Cursor mCursor;
     Cursor supplierCursor;
     Uri mCurrentBookUri;
     private EditText titleET;
@@ -45,10 +44,14 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     private ImageButton deleteButton;
     private ImageButton addButton;
     private ImageButton removeButton;
+    private ImageButton phoneButton;
 
     private Spinner supplierSpinner;
     private ArrayAdapter<String> mSpinAdapter;
     private String mySupplier;
+    private String mySupplierPhone = "";
+    private View.OnClickListener phoneClickListener;
+    private Intent phoneIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mySupplierPhone, null));
 
     private String LOGTAG = "EditorActivity";
 
@@ -78,6 +81,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         deleteButton = findViewById(R.id.deleteBtn);
         addButton = findViewById(R.id.addBtn);
         removeButton = findViewById(R.id.removeBtn);
+        phoneButton = findViewById(R.id.phoneButton);
         supplierSpinner = findViewById(R.id.supplierSpinner);
         supplierPhoneTV = findViewById(R.id.SupplierPhoneTV);
 
@@ -219,6 +223,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
                 }
             });
 
+            phoneButton.setOnClickListener(phoneClickListener);
         }
     }
 
@@ -233,6 +238,8 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         authorET.setText("");
         quantiyET.setText("");
         priceET.setText("");
+        supplierPhoneTV.setText("");
+
         // TODO add other fields
     }
 
@@ -247,22 +254,22 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         // Retrieves the data from the views in the form and validate it
         String title = String.valueOf(titleET.getText());
         if (title.isEmpty()) {
-            Utility.showToast("Please insert a title for the book", this);
+            Utility.showToast(getString(R.string.EditProductTitleEmptyWarning), this);
             return false;
         }
         String author = String.valueOf(authorET.getText());
         if (author.isEmpty()) {
-            Utility.showToast("Please insert an author for the book", this);
+            Utility.showToast(getString(R.string.EditProductAuthorEmptyWarning), this);
             return false;
         }
         if (quantiyET.getText().toString().isEmpty()) {
-            Utility.showToast("Please insert a quantity for the book", this);
+            Utility.showToast(getString(R.string.EditProductQuantityEmptyWarning), this);
             return false;
         }
         int quantity = Integer.parseInt(quantiyET.getText().toString());
 
         if (priceET.getText().toString().isEmpty()) {
-            Utility.showToast("Please insert a price for the book", this);
+            Utility.showToast(getString(R.string.EditProductPriceEmptyWarning), this);
             return false;
         }
 
@@ -317,6 +324,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         //Hides the delete all button
         MenuItem settings_item3 = menu.findItem(R.id.action_delete_all_data);
         settings_item3.setVisible(false);
+        //Hides the settings button
+        MenuItem settings_item4 = menu.findItem(R.id.action_settings);
+        settings_item4.setVisible(false);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -336,7 +346,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     }
 
     /**
-     * Instantiates and show a new DeleteDialogFragment to ask for the user input to confirm the deletion of the current record
+     * Instantiates and shows a new DeleteDialogFragment to ask for the user input to confirm the deletion of the current record
      */
     private void showEditDialog() {
         FragmentManager fm = getSupportFragmentManager();
@@ -382,13 +392,11 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
 
         supplierCursor = getContentResolver().query(SupplierContract.SupplierEntry.CONTENT_URI, projection, null, null, mySortOrder);
 
-        int supplierIDColumnIndex = supplierCursor.getColumnIndex(SupplierContract.SupplierEntry._ID);
         int supplierNameColumnIndex = supplierCursor.getColumnIndex(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME);
         long n_rows = supplierCursor.getCount();
         Log.e(LOGTAG, String.valueOf(n_rows));
 
         while (supplierCursor.moveToNext()) {
-            //suppliersList.add(supplierCursor.getInt(supplierIDColumnIndex),supplierCursor.getString(supplierNameColumnIndex));
             suppliersList.add(supplierCursor.getString(supplierNameColumnIndex));
         }
         supplierCursor.close();
@@ -415,6 +423,8 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
+        phoneButton.setOnClickListener(phoneClickListener);
     }
 
     /**
@@ -438,12 +448,20 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             myPhone = phoneCursor.getString(phoneCursor.getColumnIndex(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_PHONE));
         } catch (Exception e) {
             e.printStackTrace();
+            //TODO show a Toast
             myPhone = "";
         } finally {
             if (!phoneCursor.isNull(0))
                 phoneCursor.close();
         }
 
+        phoneIntent.setData(Uri.fromParts("tel", myPhone, null));
+        phoneClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(phoneIntent);
+            }
+        };
         return myPhone;
     }
 }

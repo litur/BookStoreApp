@@ -4,9 +4,11 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     // Setup an Adapter to create a list item for each row of pet data in the Cursor.
     BookCursorAdapter adapter;
 
-    private String LOGTAG = "Main Activity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         ActionBar myActionBar = getSupportActionBar();
         assert myActionBar != null;
         myActionBar.setTitle(com.example.android.bookstoreapp.R.string.mainActivity_title);
-        myActionBar.setElevation(8);
+        myActionBar.setElevation(4);
 
         mListView = findViewById(R.id.bookListView);
 
@@ -81,17 +82,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_LANGUAGE,BookEntry.LANGUAGE_ENGLISH);
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_QUANTITY,1);
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_PRICE, 990);
-        // for the supplier ID we pass the ID  of the newly created row in supplier table
-        //TODO handle the foreign key for the supplier
         myBooksDummyData.put(BookEntry.COLUMN_BOOK_SUPPLIER_ID, "Penguin Books");
 
-        // Insert the new row, returning the primary key value of the new row
+        // Insert the new row, returning the Uri of the new row
         Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI, myBooksDummyData);
         if (newUri != null)
             Utility.showToast("Inserted a new book", this);
     }
-
-    //TODO add the deleteAllProducts in the menu
 
     /**
      * Perform the deletion of all the books/products in the database
@@ -115,7 +112,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            // for now, it does nothing
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
             return true;
         }
 
@@ -134,13 +132,35 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public android.content.Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String mySortOrder;
+
+        //Use SharedPreferences to define SortOrder
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String orderBy = sharedPrefs.getString(
+                getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_default)
+        );
+
+        switch (orderBy) {
+            case "name":
+                mySortOrder = BookEntry.COLUMN_BOOK_TITLE + " ASC";
+                break;
+            case "author":
+                mySortOrder = BookEntry.COLUMN_BOOK_AUTHOR + " ASC";
+                break;
+            case "quantity_ASC":
+                mySortOrder = BookEntry.COLUMN_BOOK_QUANTITY + " ASC";
+                break;
+            default:
+                mySortOrder = "_ID DESC";
+                break;
+        }
+
         String[] projection = {BookEntry._ID,
                 BookEntry.COLUMN_BOOK_AUTHOR,
                 BookEntry.COLUMN_BOOK_TITLE,
                 BookEntry.COLUMN_BOOK_QUANTITY,
                 BookEntry.COLUMN_BOOK_PRICE};
-
-        String mySortOrder = "_ID DESC";
 
         return new CursorLoader(this, BookEntry.CONTENT_URI, projection, null, null, mySortOrder);
     }

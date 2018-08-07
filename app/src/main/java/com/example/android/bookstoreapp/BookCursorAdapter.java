@@ -123,7 +123,7 @@ public class BookCursorAdapter extends CursorAdapter {
                 Intent editIntent = new Intent(context, ProductEditActivity.class);
                 editIntent.setData(singleBookUri);
                 context.startActivity(editIntent);
-                Log.e("Pippo", "Clicck sulla cardView");
+                Log.e("Pippo", "Click sulla cardView");
             }
         });
 

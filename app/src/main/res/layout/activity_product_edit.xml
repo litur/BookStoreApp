@@ -192,11 +192,22 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:autoLink="phone"
+            app:layout_constraintBottom_toBottomOf="@+id/phoneButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner"
+            app:layout_constraintTop_toTopOf="@+id/phoneButton"
             tools:text="333229911" />
+
+        <ImageButton
+            android:id="@+id/phoneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toEndOf="@+id/SupplierPhoneTV"
+            app:layout_constraintTop_toBottomOf="@+id/supplierSpinner"
+            app:srcCompat="@android:drawable/stat_sys_phone_call" />
 
 
     </android.support.constraint.ConstraintLayout>
