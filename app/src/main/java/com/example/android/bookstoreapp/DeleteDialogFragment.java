@@ -7,13 +7,14 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
-// Used to handle the Confirmation Dialog for Deleting an item
-// https://developer.android.com/guide/topics/ui/dialogs
+/**
+ * Used to handle the Confirmation Dialog for Deleting an item
+ * * https://developer.android.com/guide/topics/ui/dialogs
+ */
 public class DeleteDialogFragment extends DialogFragment {
 
-
     // Use this instance of the interface to deliver action events
-    NoticeDialogListener mListener;
+    private NoticeDialogListener mListener;
 
     public DeleteDialogFragment() {
         // Empty constructor is required for DialogFragment

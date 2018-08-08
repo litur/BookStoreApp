@@ -14,6 +14,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,8 +34,8 @@ import java.util.ArrayList;
 
 public class ProductEditActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, DeleteDialogFragment.NoticeDialogListener {
 
-    Cursor supplierCursor;
-    Uri mCurrentBookUri;
+    private Cursor supplierCursor;
+    private Uri mCurrentBookUri;
     private EditText titleET;
     private EditText authorET;
     private EditText quantiyET;
@@ -91,6 +92,9 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         addLabel = findViewById(R.id.AddLabel);
         removeLabel = findViewById(R.id.RemoveLabel);
 
+        //Call initializer for supplier spinner
+        setupSuppliersSpinner();
+
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new item or editing an existing one.
         Intent intent = getIntent();
@@ -107,6 +111,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             deleteLabel.setVisibility(View.GONE);
             addLabel.setVisibility(View.GONE);
             removeLabel.setVisibility(View.GONE);
+            supplierSpinner.setSelection(0);
         } else {
             myActionBar.setTitle(getString(R.string.editor_activity_title_edit_product));
             // Initialize a loader to read the product/book data from the database
@@ -131,9 +136,6 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
                     finish();
             }
         });
-
-        //Call initializer for supplier spinner
-        setupSuppliersSpinner();
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
@@ -171,7 +173,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
-            // Find the columns of pet attributes that we're interested in
+            // Find the columns of book attributes that we're interested in
             int titleColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_TITLE);
             int authorColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_AUTHOR);
             int quantityColumnIndex = cursor.getColumnIndex(BookContract.BookEntry.COLUMN_BOOK_QUANTITY);
@@ -193,7 +195,13 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             priceET.setText(Float.toString(price));
             supplierSpinner.setSelection(mSpinAdapter.getPosition(cursor.getString(supplierColumnIndex)));
             supplierPhoneTV.setAutoLinkMask(4);
-            supplierPhoneTV.setText(getSupplierPhone(cursor.getString(supplierColumnIndex)));
+            // it should not happen that we retrieve an empty supplier filed from the books table, but in case we don't try
+            // to upadte the phone number TextView
+            if (!TextUtils.isEmpty(cursor.getString(supplierColumnIndex)))
+                supplierPhoneTV.setText(getSupplierPhone(cursor.getString(supplierColumnIndex)));
+            else
+                supplierPhoneTV.setText("");
+
 
             // sets a clickListener on the AddButton to increase the in Stock Quantity.
             // we set it here in the OnLoadFinished because we need to know the actual quantity saved in the dB
@@ -248,8 +256,8 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         quantiyET.setText("");
         priceET.setText("");
         supplierPhoneTV.setText("");
+        supplierSpinner.setSelection(0);
 
-        // TODO add other fields
     }
 
     /**
@@ -281,6 +289,12 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             Utility.showToast(getString(R.string.EditProductPriceEmptyWarning), this);
             return false;
         }
+
+        if (TextUtils.isEmpty(supplierSpinner.getSelectedItem().toString())) {
+            Utility.showToast(getString(R.string.EditProductSupplierEmptyWarning), this);
+            return false;
+        }
+
 
         float floatPrice = Float.parseFloat(priceET.getText().toString()) * 100;
         int intPrice = Math.round(floatPrice);
@@ -385,13 +399,15 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
     }
 
     /**
-     * Setup the dropdown spinner that allows the user to select the gender of the pet.
+     * Setup the dropdown spinner that allows the user to select the supplier of the book/product.
      */
     private void setupSuppliersSpinner() {
 
         //Set the spinner which shows existing supplier names
         ArrayList<String> suppliersList;
         suppliersList = new ArrayList<>();
+        //adds an empty row
+        suppliersList.add("");
 
         String[] projection = {SupplierContract.SupplierEntry._ID,
                 SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME};
@@ -411,7 +427,7 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         supplierCursor.close();
 
         // Creating adapter for spinner
-        mSpinAdapter = new ArrayAdapter<String>(this,
+        mSpinAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, suppliersList);
         mSpinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -423,8 +439,10 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mySupplier = parent.getItemAtPosition(position).toString();
-                supplierPhoneTV.setText(getSupplierPhone(mySupplier));
-
+                if (TextUtils.isEmpty(mySupplier))
+                    supplierPhoneTV.setText("");
+                else
+                    supplierPhoneTV.setText(getSupplierPhone(mySupplier));
                 Log.e(LOGTAG, mySupplier);
             }
 
@@ -449,19 +467,17 @@ public class ProductEditActivity extends AppCompatActivity implements LoaderMana
         String selection = SupplierContract.SupplierEntry.COLUMN_SUPPLIER_NAME + "=?";
         String[] selectionArgs = {supplierForPhone};
         String myPhone;
-        Cursor phoneCursor = null;
+        Cursor phoneCursor;
         try {
             phoneCursor = getContentResolver().query(SupplierContract.SupplierEntry.CONTENT_URI, projection, selection, selectionArgs, null);
             phoneCursor.moveToFirst();
 
             myPhone = phoneCursor.getString(phoneCursor.getColumnIndex(SupplierContract.SupplierEntry.COLUMN_SUPPLIER_PHONE));
+            phoneCursor.close();
         } catch (Exception e) {
             e.printStackTrace();
-            //TODO show a Toast
+            Utility.showToast(getString(R.string.EditProductErrorSupplierPhone), this);
             myPhone = "";
-        } finally {
-            if (!phoneCursor.isNull(0))
-                phoneCursor.close();
         }
 
         phoneIntent.setData(Uri.fromParts("tel", myPhone, null));

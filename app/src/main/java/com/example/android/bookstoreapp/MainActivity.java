@@ -22,11 +22,11 @@ import com.example.android.bookstoreapp.data.BookContract.BookEntry;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    ListView mListView;
-    FloatingActionButton mFloatButton;
+    private ListView mListView;
+    private FloatingActionButton mFloatButton;
 
-    // Setup an Adapter to create a list item for each row of pet data in the Cursor.
-    BookCursorAdapter adapter;
+    // Setup an Adapter to create a list item for each row of book data in the Cursor.
+    private BookCursorAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
-    // Inserts fake (dummy) data in the Book and supplier tables
+    /**
+     * * Inserts fake (dummy) data in the Book and supplier tables
+     */
     private void insertDummyData(){
 
         // Inserts a record in books table
@@ -129,7 +131,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return super.onOptionsItemSelected(item);
     }
 
-
+    /**
+     * Called when the Loader is created (see https://developer.android.com/reference/android/app/LoaderManager.LoaderCallbacks)
+     * @param i The ID whose loader is to be created.
+     * @param bundle Any arguments supplied by the caller.
+     * @return a cursor Loader based on a query handled by the ContentProvider
+     */
     @Override
     public android.content.Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String mySortOrder;

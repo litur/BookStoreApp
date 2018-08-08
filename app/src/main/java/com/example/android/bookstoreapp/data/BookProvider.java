@@ -16,7 +16,7 @@ public class BookProvider extends ContentProvider {
     /**
      * Tag for the log messages
      */
-    public static final String LOG_TAG = BookProvider.class.getSimpleName();
+    private static final String LOG_TAG = BookProvider.class.getSimpleName();
 
     /**
      * URI matcher code for the content URI for the books table
@@ -72,7 +72,7 @@ public class BookProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
         // This cursor will hold the result of the query
-        Cursor cursor = null;
+        Cursor cursor;
 
         // Figure out if the URI matcher can match the URI to a specific code
         int match = sUriMatcher.match(uri);
@@ -80,14 +80,14 @@ public class BookProvider extends ContentProvider {
             case BOOKS:
                 // For the BOOKS code, query the books table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
-                // could contain multiple rows of the pets table.
+                // could contain multiple rows of the books table.
 
                 cursor = database.query(BookContract.BookEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             case BOOK_ID:
-                // For the PET_ID code, extract out the ID from the URI.
-                // For an example URI such as "content://com.example.android.pets/pets/3",
+                // For the BOOK_ID code, extract out the ID from the URI.
+                // For an example URI such as "content://com.example.android.books/books/3",
                 // the selection will be "_id=?" and the selection argument will be a
                 // String array containing the actual ID of 3 in this case.
                 //
@@ -97,7 +97,7 @@ public class BookProvider extends ContentProvider {
                 selection = BookContract.BookEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-                // This will perform a query on the pets table where the _id equals 3 to return a
+                // This will perform a query on the books table for a specific ID to return a
                 // Cursor containing that row of the table.
                 cursor = database.query(BookContract.BookEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
@@ -105,7 +105,7 @@ public class BookProvider extends ContentProvider {
             case SUPPLIERS:
                 // For the SUPPLIERS code, query the suppliers table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
-                // could contain multiple rows of the pets table.
+                // could contain multiple rows of the suppliers table.
 
                 cursor = database.query(SupplierContract.SupplierEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
@@ -165,7 +165,7 @@ public class BookProvider extends ContentProvider {
             return null;
         } else
             Log.e(LOG_TAG, "Inserted row " + uri);
-        // notifies all listeners that the data has changed for the pet Content Uri
+        // notifies all listeners that the data has changed for the book Content Uri
         getContext().getContentResolver().notifyChange(uri, null);
 
         // Once we know the ID of the new row in the table,
@@ -244,7 +244,7 @@ public class BookProvider extends ContentProvider {
             case BOOKS:
                 return updateBook(uri, contentValues, selection, selectionArgs);
             case BOOK_ID:
-                // For the PET_ID code, extract out the ID from the URI,
+                // For the BOOK_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = BookContract.BookEntry._ID + "=?";
